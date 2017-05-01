@@ -12,6 +12,7 @@ execute:
 
 ```python
 from googlefinance.client import getprices
+from datetime import datetime
 
 query = {
 	'q': "7203",	# Stock symbol (ex: "AAPL")
@@ -20,7 +21,7 @@ query = {
 	'p': "1Y",	# Period (Ex: "1Y" = 1 year)
 	'ts': datetime.now().timestamp()	# Starting timestamp (Unix format). If blank, it uses today.
 }
-df = getprices(query)
+df = getprices(query)	# return pandas dataframe
 print(df)
 #                     DATE CLOSE  HIGH   LOW  OPEN    VOLUME
 # 0    2016/05/02 15:00:00  5442  5468  5375  5404  12275800
