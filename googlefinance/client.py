@@ -23,8 +23,8 @@ def getprices(query):
 
 if __name__ == '__main__':
 	query = {
-		'q': 7203,
-		'i': 86400,
+		'q': "7203",
+		'i': "86400",
 		'x': "TYO",
 		'p': "1Y",
 		'ts': datetime.now().timestamp()

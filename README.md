@@ -1,23 +1,23 @@
-# googlefinance-client-python
+# googlefinance.client
 
-googlefinance-client-python is a Python client library for google finance.
+googlefinance.client is a python client library for google finance.
 
 ## Installation
 
 execute:
 
-    $ pip install googlefinance-client-python
+    $ pip install googlefinance.client
 
 ## Usage
 
 ```python
-from googlefinance-client-python import getprices
+from googlefinance.client import getprices
 
 query = {
-	'q': 7203,							# Stock symbol (ex: AAPL)
-	'i': 86400,							# Interval size in seconds (86400 = 1 day intervals)
-	'x': "TYO",							# Stock exchange symbol on which stock is traded (ex: NASD)
-	'p': "1Y",							# Period (Ex: 1Y = 1 year)
+	'q': "7203",	# Stock symbol (ex: "AAPL")
+	'i': "86400",	# Interval size in seconds ("86400" = 1 day intervals)
+	'x': "TYO",	# Stock exchange symbol on which stock is traded (ex: "NASD")
+	'p': "1Y",	# Period (Ex: "1Y" = 1 year)
 	'ts': datetime.now().timestamp()	# Starting timestamp (Unix format). If blank, it uses today.
 }
 df = getprices(query)
