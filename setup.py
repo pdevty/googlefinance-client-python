@@ -7,14 +7,14 @@ except ImportError:
     print("Please install setuptools.")
 
 import os
-long_description = 'googlefinance.client is a python client library for google finance.'
+long_description = 'googlefinance.client is a python client library for google finance api.'
 if os.path.exists('README.txt'):
     long_description = open('README.txt').read()
 
 setup(
     name  = 'googlefinance.client',
-    version = '0.1.0',
-    description = 'googlefinance.client is a python client library for google finance.',
+    version = '0.2.0',
+    description = 'googlefinance.client is a python client library for google finance api.',
     long_description = long_description,
     license = 'MIT',
     author = 'pdevty',
