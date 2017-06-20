@@ -13,7 +13,7 @@ if os.path.exists('README.txt'):
 
 setup(
     name  = 'googlefinance.client',
-    version = '0.2.0',
+    version = '1.1.0',
     description = 'googlefinance.client is a python client library for google finance api.',
     long_description = long_description,
     license = 'MIT',
