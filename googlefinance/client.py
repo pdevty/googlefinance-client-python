@@ -46,6 +46,31 @@ def get_closing_data(queries, period):
 		closing_data.append(s[~s.index.duplicated(keep='last')])
 	return pd.concat(closing_data, axis=1)
 
+def get_open_close_data(queries, period):
+	open_close_data = []
+	for query in queries:
+		query['i'] = 86400
+		query['p'] = period
+		r = requests.get("https://www.google.com/finance/getprices", params=query)
+		lines = r.text.splitlines()
+		data = []
+		index = []
+		basetime = 0
+		for price in lines:
+			cols = price.split(",")
+			if cols[0][0] == 'a':
+				basetime = int(cols[0][1:])
+				date = basetime
+				data.append([float(cols[4]), float(cols[1])])
+				index.append(datetime.fromtimestamp(date).date())
+			elif cols[0][0].isdigit():
+				date = basetime + (int(cols[0])*int(query['i']))
+				data.append([float(cols[4]), float(cols[1])])
+				index.append(datetime.fromtimestamp(date).date())
+		s = pd.Series(data,index=index,name=query['q'])
+		open_close_data.append(s[~s.index.duplicated(keep='last')])
+	return pd.concat(open_close_data, axis=1)
+
 if __name__ == '__main__':
 	# Dow Jones
 	param = {
@@ -90,3 +115,30 @@ if __name__ == '__main__':
 	# 2016-05-20  17435.40  10192.5015  2040.04
 	# 2016-05-21  17500.94  10250.4961  2052.32
 	# ...              ...         ...      ...
+	params = [
+		# Dow Jones
+		{
+			'q': ".DJI",
+			'x': "INDEXDJX",
+		},
+		# NYSE COMPOSITE (DJ)
+		{
+			'q': "NYA",
+			'x': "INDEXNYSEGIS",
+		},
+		# S&P 500
+		{
+			'q': ".INX",
+			'x': "INDEXSP",
+		}
+	]
+	period = "1Y"
+	df = get_open_close_data(params, period)
+	print(df)
+	#                             .DJI                       NYA                .INX
+	# 2016-06-21  [17736.87, 17804.87]  [10456.9207, 10450.0288]  [2075.58, 2083.25]
+	# 2016-06-22  [17827.33, 17829.73]    [10481.1576, 10490.78]   [2085.19, 2088.9]
+	# 2016-06-23  [17832.67, 17780.83]  [10507.9429, 10473.0578]  [2089.75, 2085.45]
+	# 2016-06-24  [17844.11, 18011.07]  [10573.4669, 10641.1686]   [2092.8, 2113.32]
+	# 2016-06-25  [17946.63, 17400.75]  [10335.9189, 10183.5145]  [2103.81, 2037.41]
+	# ...                          ...                       ...                 ...
