@@ -67,9 +67,8 @@ def get_open_close_data(queries, period):
 				date = basetime + (int(cols[0])*int(query['i']))
 				data.append([float(cols[4]), float(cols[1])])
 				index.append(datetime.fromtimestamp(date).date())
-		open_close_data = pd.concat([open_close_data,
-			pd.DataFrame(data, index = index, columns = [query['q']+'_Open',query['q']+'_Close'])],
-			axis=1)
+		df = pd.DataFrame(data, index=index, columns=[query['q']+'_Open',query['q']+'_Close'])
+		open_close_data = pd.concat([open_close_data, df[~df.index.duplicated(keep='last')]], axis=1)
 	return open_close_data
 
 
