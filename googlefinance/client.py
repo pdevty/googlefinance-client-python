@@ -47,7 +47,7 @@ def get_closing_data(queries, period):
 	return pd.concat(closing_data, axis=1)
 
 def get_open_close_data(queries, period):
-	open_close_data = []
+	open_close_data = pd.DataFrame()
 	for query in queries:
 		query['i'] = 86400
 		query['p'] = period
@@ -67,9 +67,11 @@ def get_open_close_data(queries, period):
 				date = basetime + (int(cols[0])*int(query['i']))
 				data.append([float(cols[4]), float(cols[1])])
 				index.append(datetime.fromtimestamp(date).date())
-		s = pd.Series(data,index=index,name=query['q'])
-		open_close_data.append(s[~s.index.duplicated(keep='last')])
-	return pd.concat(open_close_data, axis=1)
+		open_close_data = pd.concat([open_close_data,
+			pd.DataFrame(data, index = index, columns = [query['q']+'_Open',query['q']+'_Close'])],
+			axis=1)
+	return open_close_data
+
 
 if __name__ == '__main__':
 	# Dow Jones
@@ -135,10 +137,10 @@ if __name__ == '__main__':
 	period = "1Y"
 	df = get_open_close_data(params, period)
 	print(df)
-	#                             .DJI                       NYA                .INX
-	# 2016-06-21  [17736.87, 17804.87]  [10456.9207, 10450.0288]  [2075.58, 2083.25]
-	# 2016-06-22  [17827.33, 17829.73]    [10481.1576, 10490.78]   [2085.19, 2088.9]
-	# 2016-06-23  [17832.67, 17780.83]  [10507.9429, 10473.0578]  [2089.75, 2085.45]
-	# 2016-06-24  [17844.11, 18011.07]  [10573.4669, 10641.1686]   [2092.8, 2113.32]
-	# 2016-06-25  [17946.63, 17400.75]  [10335.9189, 10183.5145]  [2103.81, 2037.41]
-	# ...                          ...                       ...                 ...
+	#             .DJI_Open  .DJI_Close    NYA_Open   NYA_Close  .INX_Open  \
+	# 2016-06-21   17736.87    17804.87  10456.9207  10450.0288    2075.58   
+	# 2016-06-22   17827.33    17829.73  10481.1576  10490.7800    2085.19   
+	# 2016-06-23   17832.67    17780.83  10507.9429  10473.0578    2089.75   
+	# 2016-06-24   17844.11    18011.07  10573.4669  10641.1686    2092.80   
+	# 2016-06-25   17946.63    17400.75  10335.9189  10183.5145    2103.81   
+	# ...               ...         ...         ...         ...        ...   
