@@ -86,11 +86,11 @@ def get_prices_data(queries, period):
 			if cols[0][0] == 'a':
 				basetime = int(cols[0][1:])
 				date = basetime
-				data.append([cols[4], cols[2], cols[3], cols[1]])
+				data.append([float(cols[4]), float(cols[2]), float(cols[3]), float(cols[1])])
 				index.append(datetime.fromtimestamp(date).date())
 			elif cols[0][0].isdigit():
 				date = basetime + (int(cols[0])*int(query['i']))
-				data.append([cols[4], cols[2], cols[3], cols[1]])
+				data.append([float(cols[4]), float(cols[2]), float(cols[3]), float(cols[1])])
 				index.append(datetime.fromtimestamp(date).date())
 		df = pd.DataFrame(data, index=index, columns=[query['q']+'_Open',query['q']+'_High',query['q']+'_Low',query['q']+'_Close'])
 		open_close_data = pd.concat([open_close_data, df[~df.index.duplicated(keep='last')]], axis=1)
