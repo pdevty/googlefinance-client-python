@@ -9,7 +9,7 @@ googlefinance.client is a python client library for google finance api
 ## Usage
 
 ```python
-from googlefinance.client import get_price_data, get_closing_data, get_open_close_data
+from googlefinance.client import get_price_data, get_closing_data, get_open_close_data, get_prices_data
 
 # Dow Jones
 param = {
@@ -86,6 +86,35 @@ print(df)
 # 2016-06-24   17844.11    18011.07  10573.4669  10641.1686    2092.80   
 # 2016-06-25   17946.63    17400.75  10335.9189  10183.5145    2103.81   
 # ...               ...         ...         ...         ...        ...   
+
+params = [
+	# Dow Jones
+	{
+		'q': ".DJI",
+		'x': "INDEXDJX",
+	},
+	# NYSE COMPOSITE (DJ)
+	{
+		'q': "NYA",
+		'x': "INDEXNYSEGIS",
+	},
+	# S&P 500
+	{
+		'q': ".INX",
+		'x': "INDEXSP",
+	}
+]
+period = "1Y"
+# get open, high, low, close price data (return pandas dataframe)
+df = get_prices_data(params, period)
+print(df)
+#            .DJI_Open .DJI_High  .DJI_Low .DJI_Close    NYA_Open    NYA_High  \
+# 2016-06-24  17844.11  18011.07  17844.11   18011.07  10573.4669  10641.1704   
+# 2016-06-25  17946.63  17946.63  17356.34   17400.75  10335.9189  10360.1025   
+# 2016-06-28  17355.21  17355.21  17063.08   17140.24  10084.4835  10084.4835   
+# 2016-06-29  17190.51  17409.72  17190.51   17409.72  10073.1527    10161.16   
+# 2016-06-30  17456.02  17704.51  17456.02   17694.68  10254.8639  10362.0602   
+# ...              ...       ...       ...        ...         ...         ...   
 ```
 
 ## Contributing

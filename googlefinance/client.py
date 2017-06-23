@@ -71,6 +71,30 @@ def get_open_close_data(queries, period):
 		open_close_data = pd.concat([open_close_data, df[~df.index.duplicated(keep='last')]], axis=1)
 	return open_close_data
 
+def get_prices_data(queries, period):
+	open_close_data = pd.DataFrame()
+	for query in queries:
+		query['i'] = 86400
+		query['p'] = period
+		r = requests.get("https://www.google.com/finance/getprices", params=query)
+		lines = r.text.splitlines()
+		data = []
+		index = []
+		basetime = 0
+		for price in lines:
+			cols = price.split(",")
+			if cols[0][0] == 'a':
+				basetime = int(cols[0][1:])
+				date = basetime
+				data.append([cols[4], cols[2], cols[3], cols[1]])
+				index.append(datetime.fromtimestamp(date).date())
+			elif cols[0][0].isdigit():
+				date = basetime + (int(cols[0])*int(query['i']))
+				data.append([cols[4], cols[2], cols[3], cols[1]])
+				index.append(datetime.fromtimestamp(date).date())
+		df = pd.DataFrame(data, index=index, columns=[query['q']+'_Open',query['q']+'_High',query['q']+'_Low',query['q']+'_Close'])
+		open_close_data = pd.concat([open_close_data, df[~df.index.duplicated(keep='last')]], axis=1)
+	return open_close_data
 
 if __name__ == '__main__':
 	# Dow Jones
@@ -143,3 +167,30 @@ if __name__ == '__main__':
 	# 2016-06-24   17844.11    18011.07  10573.4669  10641.1686    2092.80   
 	# 2016-06-25   17946.63    17400.75  10335.9189  10183.5145    2103.81   
 	# ...               ...         ...         ...         ...        ...   
+	params = [
+		# Dow Jones
+		{
+			'q': ".DJI",
+			'x': "INDEXDJX",
+		},
+		# NYSE COMPOSITE (DJ)
+		{
+			'q': "NYA",
+			'x': "INDEXNYSEGIS",
+		},
+		# S&P 500
+		{
+			'q': ".INX",
+			'x': "INDEXSP",
+		}
+	]
+	period = "1Y"
+	df = get_prices_data(params, period)
+	print(df)
+	#            .DJI_Open .DJI_High  .DJI_Low .DJI_Close    NYA_Open    NYA_High  \
+	# 2016-06-24  17844.11  18011.07  17844.11   18011.07  10573.4669  10641.1704   
+	# 2016-06-25  17946.63  17946.63  17356.34   17400.75  10335.9189  10360.1025   
+	# 2016-06-28  17355.21  17355.21  17063.08   17140.24  10084.4835  10084.4835   
+	# 2016-06-29  17190.51  17409.72  17190.51   17409.72  10073.1527    10161.16   
+	# 2016-06-30  17456.02  17704.51  17456.02   17694.68  10254.8639  10362.0602   
+	# ...              ...       ...       ...        ...         ...         ...   
