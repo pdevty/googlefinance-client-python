@@ -14,11 +14,11 @@ def get_price_data(query):
 		if cols[0][0] == 'a':
 			basetime = int(cols[0][1:])
 			index.append(datetime.fromtimestamp(basetime))
-			data.append([cols[4], cols[2], cols[3], cols[1], cols[5]])
+			data.append([float(cols[4]), float(cols[2]), float(cols[3]), float(cols[1]), int(cols[5])])
 		elif cols[0][0].isdigit():
 			date = basetime + (int(cols[0])*int(query['i']))
 			index.append(datetime.fromtimestamp(date))
-			data.append([cols[4], cols[2], cols[3], cols[1], cols[5]])
+			data.append([float(cols[4]), float(cols[2]), float(cols[3]), float(cols[1]), int(cols[5])])
 	return pd.DataFrame(data, index = index, columns = ['Open', 'High', 'Low', 'Close', 'Volume'])
 
 def get_closing_data(queries, period):
