@@ -9,7 +9,7 @@ googlefinance.client is a python client library for google finance api
 ## Usage
 
 ```python
-from googlefinance.client import get_price_data, get_closing_data, get_open_close_data, get_prices_data
+from googlefinance.client import get_price_data, get_prices_data, get_prices_time_data
 
 # Dow Jones
 param = {
@@ -47,74 +47,46 @@ params = [
 	}
 ]
 period = "1Y"
-# get closing price data (return pandas dataframe)
-df = get_closing_data(params, period)
-print(df)
-#                 .DJI         NYA     .INX
-# 2016-05-17  17710.71  10332.4261  2066.66
-# 2016-05-18  17529.98  10257.6102  2047.21
-# 2016-05-19  17526.62  10239.6501  2047.63
-# 2016-05-20  17435.40  10192.5015  2040.04
-# 2016-05-21  17500.94  10250.4961  2052.32
-# ...              ...         ...      ...
-
-params = [
-	# Dow Jones
-	{
-		'q': ".DJI",
-		'x': "INDEXDJX",
-	},
-	# NYSE COMPOSITE (DJ)
-	{
-		'q': "NYA",
-		'x': "INDEXNYSEGIS",
-	},
-	# S&P 500
-	{
-		'q': ".INX",
-		'x': "INDEXSP",
-	}
-]
-period = "1Y"
-# get open and close price data (return pandas dataframe)
-df = get_open_close_data(params, period)
-print(df)
-#             .DJI_Open  .DJI_Close    NYA_Open   NYA_Close  .INX_Open  \
-# 2016-06-21   17736.87    17804.87  10456.9207  10450.0288    2075.58   
-# 2016-06-22   17827.33    17829.73  10481.1576  10490.7800    2085.19   
-# 2016-06-23   17832.67    17780.83  10507.9429  10473.0578    2089.75   
-# 2016-06-24   17844.11    18011.07  10573.4669  10641.1686    2092.80   
-# 2016-06-25   17946.63    17400.75  10335.9189  10183.5145    2103.81   
-# ...               ...         ...         ...         ...        ...   
-
-params = [
-	# Dow Jones
-	{
-		'q': ".DJI",
-		'x': "INDEXDJX",
-	},
-	# NYSE COMPOSITE (DJ)
-	{
-		'q': "NYA",
-		'x': "INDEXNYSEGIS",
-	},
-	# S&P 500
-	{
-		'q': ".INX",
-		'x': "INDEXSP",
-	}
-]
-period = "1Y"
-# get open, high, low, close price data (return pandas dataframe)
+# get open, high, low, close, volume data (return pandas dataframe)
 df = get_prices_data(params, period)
 print(df)
-#            .DJI_Open .DJI_High  .DJI_Low .DJI_Close    NYA_Open    NYA_High  \
-# 2016-06-24  17844.11  18011.07  17844.11   18011.07  10573.4669  10641.1704   
-# 2016-06-25  17946.63  17946.63  17356.34   17400.75  10335.9189  10360.1025   
-# 2016-06-28  17355.21  17355.21  17063.08   17140.24  10084.4835  10084.4835   
-# 2016-06-29  17190.51  17409.72  17190.51   17409.72  10073.1527    10161.16   
-# 2016-06-30  17456.02  17704.51  17456.02   17694.68  10254.8639  10362.0602   
-# ...              ...       ...       ...        ...         ...         ...   
+#            .DJI_Open  .DJI_High  .DJI_Low  .DJI_Close  .DJI_Volume  \
+# 2016-07-20   18503.12   18562.53  18495.11    18559.01    85840786   
+# 2016-07-21   18582.70   18622.01  18555.65    18595.03    93233337   
+# 2016-07-22   18589.96   18590.44  18469.67    18517.23    86803016   
+# 2016-07-23   18524.15   18571.30  18491.59    18570.85    87706622   
+# 2016-07-26   18554.49   18555.69  18452.62    18493.06    76807470   
+# ...               ...        ...       ...         ...         ...   
+
+params = [
+	# Dow Jones
+	{
+		'q': ".DJI",
+		'x': "INDEXDJX",
+	},
+	# NYSE COMPOSITE (DJ)
+	{
+		'q': "NYA",
+		'x': "INDEXNYSEGIS",
+	},
+	# S&P 500
+	{
+		'q': ".INX",
+		'x': "INDEXSP",
+	}
+]
+period = "1Y"
+interval = 60*30 # 30 minutes
+# get open, high, low, close, volume time data (return pandas dataframe)
+df = get_prices_time_data(params, period, interval)
+print(df)
+#                      .DJI_Open  .DJI_High  .DJI_Low  .DJI_Close  .DJI_Volume  \
+# 2016-07-19 23:00:00   18503.12   18542.13  18495.11    18522.47            0   
+# 2016-07-19 23:30:00   18522.44   18553.30  18509.25    18546.27            0   
+# 2016-07-20 00:00:00   18546.20   18549.59  18519.77    18539.93            0   
+# 2016-07-20 00:30:00   18540.24   18549.80  18526.99    18534.18            0   
+# 2016-07-20 01:00:00   18534.05   18540.38  18507.34    18516.41            0   
+# ...                        ...        ...       ...         ...          ...   
 ```
 
 ## Contributing

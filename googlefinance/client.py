@@ -72,7 +72,7 @@ def get_open_close_data(queries, period):
 	return open_close_data
 
 def get_prices_data(queries, period):
-	open_close_data = pd.DataFrame()
+	prices_data = pd.DataFrame()
 	for query in queries:
 		query['i'] = 86400
 		query['p'] = period
@@ -86,15 +86,40 @@ def get_prices_data(queries, period):
 			if cols[0][0] == 'a':
 				basetime = int(cols[0][1:])
 				date = basetime
-				data.append([float(cols[4]), float(cols[2]), float(cols[3]), float(cols[1])])
+				data.append([float(cols[4]), float(cols[2]), float(cols[3]), float(cols[1]), int(cols[5])])
 				index.append(datetime.fromtimestamp(date).date())
 			elif cols[0][0].isdigit():
 				date = basetime + (int(cols[0])*int(query['i']))
-				data.append([float(cols[4]), float(cols[2]), float(cols[3]), float(cols[1])])
+				data.append([float(cols[4]), float(cols[2]), float(cols[3]), float(cols[1]), int(cols[5])])
 				index.append(datetime.fromtimestamp(date).date())
-		df = pd.DataFrame(data, index=index, columns=[query['q']+'_Open',query['q']+'_High',query['q']+'_Low',query['q']+'_Close'])
-		open_close_data = pd.concat([open_close_data, df[~df.index.duplicated(keep='last')]], axis=1)
-	return open_close_data
+		df = pd.DataFrame(data, index=index, columns=[query['q']+'_Open',query['q']+'_High',query['q']+'_Low',query['q']+'_Close',query['q']+'_Volume'])
+		prices_data = pd.concat([prices_data, df[~df.index.duplicated(keep='last')]], axis=1)
+	return prices_data
+
+def get_prices_time_data(queries, period, interval):
+	prices_time_data = pd.DataFrame()
+	for query in queries:
+		query['i'] = interval
+		query['p'] = period
+		r = requests.get("https://www.google.com/finance/getprices", params=query)
+		lines = r.text.splitlines()
+		data = []
+		index = []
+		basetime = 0
+		for price in lines:
+			cols = price.split(",")
+			if cols[0][0] == 'a':
+				basetime = int(cols[0][1:])
+				date = basetime
+				data.append([float(cols[4]), float(cols[2]), float(cols[3]), float(cols[1]), int(cols[5])])
+				index.append(datetime.fromtimestamp(date))
+			elif cols[0][0].isdigit():
+				date = basetime + (int(cols[0])*int(query['i']))
+				data.append([float(cols[4]), float(cols[2]), float(cols[3]), float(cols[1]), int(cols[5])])
+				index.append(datetime.fromtimestamp(date))
+		df = pd.DataFrame(data, index=index, columns=[query['q']+'_Open',query['q']+'_High',query['q']+'_Low',query['q']+'_Close',query['q']+'_Volume'])
+		prices_time_data = pd.concat([prices_time_data, df[~df.index.duplicated(keep='last')]], axis=1)
+	return prices_time_data
 
 if __name__ == '__main__':
 	# Dow Jones
@@ -187,10 +212,38 @@ if __name__ == '__main__':
 	period = "1Y"
 	df = get_prices_data(params, period)
 	print(df)
-	#            .DJI_Open .DJI_High  .DJI_Low .DJI_Close    NYA_Open    NYA_High  \
-	# 2016-06-24  17844.11  18011.07  17844.11   18011.07  10573.4669  10641.1704   
-	# 2016-06-25  17946.63  17946.63  17356.34   17400.75  10335.9189  10360.1025   
-	# 2016-06-28  17355.21  17355.21  17063.08   17140.24  10084.4835  10084.4835   
-	# 2016-06-29  17190.51  17409.72  17190.51   17409.72  10073.1527    10161.16   
-	# 2016-06-30  17456.02  17704.51  17456.02   17694.68  10254.8639  10362.0602   
-	# ...              ...       ...       ...        ...         ...         ...   
+	#            .DJI_Open  .DJI_High  .DJI_Low  .DJI_Close  .DJI_Volume  \
+	# 2016-07-20   18503.12   18562.53  18495.11    18559.01    85840786   
+	# 2016-07-21   18582.70   18622.01  18555.65    18595.03    93233337   
+	# 2016-07-22   18589.96   18590.44  18469.67    18517.23    86803016   
+	# 2016-07-23   18524.15   18571.30  18491.59    18570.85    87706622   
+	# 2016-07-26   18554.49   18555.69  18452.62    18493.06    76807470   
+	# ...               ...        ...       ...         ...         ...   
+	params = [
+		# Dow Jones
+		{
+			'q': ".DJI",
+			'x': "INDEXDJX",
+		},
+		# NYSE COMPOSITE (DJ)
+		{
+			'q': "NYA",
+			'x': "INDEXNYSEGIS",
+		},
+		# S&P 500
+		{
+			'q': ".INX",
+			'x': "INDEXSP",
+		}
+	]
+	period = "1Y"
+	interval = 60*30
+	df = get_prices_time_data(params, period, interval)
+	print(df)
+	#                      .DJI_Open  .DJI_High  .DJI_Low  .DJI_Close  .DJI_Volume  \
+	# 2016-07-19 23:00:00   18503.12   18542.13  18495.11    18522.47            0   
+	# 2016-07-19 23:30:00   18522.44   18553.30  18509.25    18546.27            0   
+	# 2016-07-20 00:00:00   18546.20   18549.59  18519.77    18539.93            0   
+	# 2016-07-20 00:30:00   18540.24   18549.80  18526.99    18534.18            0   
+	# 2016-07-20 01:00:00   18534.05   18540.38  18507.34    18516.41            0   
+	# ...                        ...        ...       ...         ...          ...   
