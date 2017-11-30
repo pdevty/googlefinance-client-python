@@ -3,8 +3,12 @@ import requests
 from datetime import datetime
 import pandas as pd
 
+
+GOOGLE_FINANCE_URL = "https://finance.google.com/finance/getprices"
+
+
 def get_price_data(query):
-	r = requests.get("https://www.google.com/finance/getprices", params=query)
+	r = requests.get(GOOGLE_FINANCE_URL, params=query)
 	lines = r.text.splitlines()
 	data = []
 	index = []
@@ -26,7 +30,7 @@ def get_closing_data(queries, period):
 	for query in queries:
 		query['i'] = 86400
 		query['p'] = period
-		r = requests.get("https://www.google.com/finance/getprices", params=query)
+		r = requests.get(GOOGLE_FINANCE_URL, params=query)
 		lines = r.text.splitlines()
 		data = []
 		index = []
@@ -51,7 +55,7 @@ def get_open_close_data(queries, period):
 	for query in queries:
 		query['i'] = 86400
 		query['p'] = period
-		r = requests.get("https://www.google.com/finance/getprices", params=query)
+		r = requests.get(GOOGLE_FINANCE_URL, params=query)
 		lines = r.text.splitlines()
 		data = []
 		index = []
@@ -76,7 +80,7 @@ def get_prices_data(queries, period):
 	for query in queries:
 		query['i'] = 86400
 		query['p'] = period
-		r = requests.get("https://www.google.com/finance/getprices", params=query)
+		r = requests.get(GOOGLE_FINANCE_URL, params=query)
 		lines = r.text.splitlines()
 		data = []
 		index = []
@@ -101,7 +105,7 @@ def get_prices_time_data(queries, period, interval):
 	for query in queries:
 		query['i'] = interval
 		query['p'] = period
-		r = requests.get("https://www.google.com/finance/getprices", params=query)
+		r = requests.get(GOOGLE_FINANCE_URL, params=query)
 		lines = r.text.splitlines()
 		data = []
 		index = []
